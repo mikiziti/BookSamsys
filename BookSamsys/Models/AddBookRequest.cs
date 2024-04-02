@@ -11,5 +11,7 @@
         public string Author { get; set; }
         //cost of the book
         public float Price { get; set; }
+        //number of pages in the book
+        public int NumberOfPages { get; set; }
     }
 }

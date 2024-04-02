@@ -26,7 +26,8 @@ namespace BookSamsys.Controllers
                Isbn= addBookRequest.Isbn,
                Title= addBookRequest.Title,
                Author= addBookRequest.Author,
-               Price= addBookRequest.Price
+               Price= addBookRequest.Price,
+               NumberOfPages= addBookRequest.NumberOfPages
             };
             dbContext.Books.Add(book);
             dbContext.SaveChanges();
@@ -97,6 +98,31 @@ namespace BookSamsys.Controllers
             }
 
             return NotFound();
+        }
+        [HttpGet]
+        [Route("/alphabeticOrder")]
+        public IActionResult GetBooksAlphabeticOrder()
+        {
+            var book = from b in dbContext.Books
+                       orderby b.Title
+                       select b;
+            if (book == null)
+            {
+                return NotFound();
+            }
+            return Ok(book);
+        }
+        //ordenar por paginação
+        [HttpGet]
+        [Route("/pagination")]
+        public IActionResult GetBooksPagination()
+        {
+            var book = dbContext.Books.OrderBy(book=>book.NumberOfPages);
+            if (book == null)
+            {
+                return NotFound();
+            }
+            return Ok(book);
         }
 
     }

@@ -36,6 +36,9 @@ namespace BookSamsys.Migrations
                     b.Property<int>("Isbn")
                         .HasColumnType("int");
 
+                    b.Property<int>("NumberOfPages")
+                        .HasColumnType("int");
+
                     b.Property<float>("Price")
                         .HasColumnType("real");
 
