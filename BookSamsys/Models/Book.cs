@@ -1,4 +1,6 @@
-﻿namespace BookSamsys.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace BookSamsys.Models
 {
     public class Book
     {
