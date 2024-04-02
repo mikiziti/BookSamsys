@@ -124,6 +124,22 @@ namespace BookSamsys.Controllers
             }
             return Ok(book);
         }
+        [HttpPut]
+        [Route("/updateBook/{isbn}")]
+        public IActionResult UpdateBook(int isbn, UpdateBookRequest updateBookRequest)
+        {
+            var book = dbContext.Books.FirstOrDefault(b => b.Isbn == isbn);
+            if (book != null)
+            {
+                book.Title = updateBookRequest.Title;
+                book.Author = updateBookRequest.Author;
+                book.Price = updateBookRequest.Price;
+                book.NumberOfPages = updateBookRequest.NumberOfPages;
+                dbContext.SaveChanges();
+                return Ok();
+            }
+            return NotFound();
+        }
 
     }
 }
