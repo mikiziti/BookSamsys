@@ -21,6 +21,21 @@ namespace BookSamsys.Controllers
         [HttpPost]
         public IActionResult AddBook(AddBookRequest addBookRequest)
         {
+            if(dbContext.Books.Any(b=>b.Isbn==addBookRequest.Isbn))
+            {
+                ModelState.AddModelError("Isbn", "ISBN must be unique.");
+                return BadRequest(ModelState);
+            }
+            if(addBookRequest.Price<0)
+            {
+                ModelState.AddModelError("Price", "Price cannot be negative.");
+                return BadRequest(ModelState);
+            }
+            if(addBookRequest.NumberOfPages<0)
+            {
+                ModelState.AddModelError("NumberOfPages", "Number of pages cannot be negative.");
+                return BadRequest(ModelState);
+            }
            var book= new Book()
            {
                Isbn= addBookRequest.Isbn,
