@@ -19,7 +19,8 @@ namespace BookSamsys.Controllers
             
         }
         [HttpPost]
-        public IActionResult AddBook(AddBookRequest addBookRequest)
+        [Route("/addBook{authorId}")]
+        public IActionResult AddBook(AddBookRequest addBookRequest,[FromRoute]int authorId)
         {
             if(dbContext.Books.Any(b=>b.Isbn==addBookRequest.Isbn))
             {
@@ -40,7 +41,7 @@ namespace BookSamsys.Controllers
            {
                Isbn= addBookRequest.Isbn,
                Title= addBookRequest.Title,
-               Author= addBookRequest.Author,
+               AuthorId= authorId,
                Price= addBookRequest.Price,
                NumberOfPages= addBookRequest.NumberOfPages
             };
@@ -75,11 +76,11 @@ namespace BookSamsys.Controllers
             return Ok(book);
         }
         [HttpGet]
-        [Route("/booksByAuthor/{author}")]
-        public IActionResult GetBooksByAuthor(string author)
+        [Route("/booksByAuthor/{authorId}")]
+        public IActionResult GetBooksByAuthor(int authorId)
         {
             var book = from b in dbContext.Books
-                       where b.Author == author
+                       where b.AuthorId == authorId
                        select b;
             if (book == null)
             {
@@ -141,13 +142,13 @@ namespace BookSamsys.Controllers
         }
         [HttpPut]
         [Route("/updateBook/{isbn}")]
-        public IActionResult UpdateBook(int isbn, UpdateBookRequest updateBookRequest)
+        public IActionResult UpdateBook(int isbn, UpdateBookRequest updateBookRequest,int authorId)
         {
             var book = dbContext.Books.FirstOrDefault(b => b.Isbn == isbn);
             if (book != null)
             {
                 book.Title = updateBookRequest.Title;
-                book.Author = updateBookRequest.Author;
+                book.AuthorId =authorId;
                 book.Price = updateBookRequest.Price;
                 book.NumberOfPages = updateBookRequest.NumberOfPages;
                 dbContext.SaveChanges();
