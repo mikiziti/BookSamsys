@@ -11,8 +11,7 @@ namespace BookSamsys.Models
         //name of the book
         public string Title { get; set; }
         //person who wrote the book
-
-        public string Author { get; set; }
+        public int AuthorId { get; set; }
         //cost of the book
         public float Price { get; set; }
 

@@ -8,11 +8,10 @@
         public string Title { get; set; }
         //person who wrote the book
 
-        public string Author { get; set; }
+        public int AuthorId { get; set; }
         //cost of the book
         public float Price { get; set; }
         //number of pages in the book
         public int NumberOfPages { get; set; }
     }
-}
 }
