@@ -19,7 +19,7 @@ namespace BookSamsys.Controllers
             
         }
         [HttpPost]
-        [Route("/addBook{authorId}")]
+        [Route("/addBook/{authorId}")]
         public IActionResult AddBook(AddBookRequest addBookRequest,[FromRoute]int authorId)
         {
             if(dbContext.Books.Any(b=>b.Isbn==addBookRequest.Isbn))
