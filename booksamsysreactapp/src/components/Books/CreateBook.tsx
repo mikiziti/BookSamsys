@@ -36,28 +36,7 @@ const CreateBook: React.FC = () => {
         setNumPages((e.target.value));
     };
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        try {
-            const response = await axios.post(`http://localhost:7132/addBook/${authorId}`, {
-                isbn: isbn,
-                title: title,
-                price: price,
-                numberOfPages: numPages
-            });
-            if (response.status === 200) {
-                alert('Book added successfully');
-            } else {
-                alert(`Failed to add book: ${response.data.message}`);
-            }
-        } catch (error) {
-            console.error('Error adding book:', error);
-        }
-    };
 
-    const back = () => {
-        navigate('/books');
-    };
 
     useEffect(() => {
         const fetchAuthors = async () => {
@@ -74,6 +53,36 @@ const CreateBook: React.FC = () => {
         };
         fetchAuthors();
     }, []);
+
+
+
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        try {
+            const response = await axios.post(`https://localhost:7132/addBook`, {
+                isbn: isbn,
+                authorId: authorId,
+                title: title,
+                price: price,
+                numberOfPages: numPages
+            });
+            if (response.status === 200) {
+                alert('Book added successfully');
+                navigate('/books');
+            } else {
+                alert(`Failed to add book: ${response.data.message}`);
+            }
+        } catch (error: any) {
+            console.error('Error adding book:', error.message);
+        }
+    };
+
+    const back = () => {
+        navigate('/books');
+    };
+
+
 
     return (
         <div>

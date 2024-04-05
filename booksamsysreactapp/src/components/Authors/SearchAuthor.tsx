@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 interface Author {
     id: number;
     name: string;
-    // Add other properties as needed
+
 }
 
 const SearchAuthor: React.FC = () => {

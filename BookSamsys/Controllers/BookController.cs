@@ -19,8 +19,8 @@ namespace BookSamsys.Controllers
             
         }
         [HttpPost]
-        [Route("/addBook/{authorId}")]
-        public IActionResult AddBook(AddBookRequest addBookRequest,[FromRoute]int authorId)
+        [Route("/addBook/")]
+        public IActionResult AddBook(AddBookRequest addBookRequest)
         {
             if(dbContext.Books.Any(b=>b.Isbn==addBookRequest.Isbn))
             {
@@ -41,7 +41,7 @@ namespace BookSamsys.Controllers
            {
                Isbn= addBookRequest.Isbn,
                Title= addBookRequest.Title,
-               AuthorId= authorId,
+               AuthorId= addBookRequest.AuthorId,
                Price= addBookRequest.Price,
                NumberOfPages= addBookRequest.NumberOfPages
             };
@@ -142,13 +142,13 @@ namespace BookSamsys.Controllers
         }
         [HttpPut]
         [Route("/updateBook/{isbn}")]
-        public IActionResult UpdateBook(int isbn, UpdateBookRequest updateBookRequest,int authorId)
+        public IActionResult UpdateBook(int isbn, UpdateBookRequest updateBookRequest)
         {
             var book = dbContext.Books.FirstOrDefault(b => b.Isbn == isbn);
             if (book != null)
             {
                 book.Title = updateBookRequest.Title;
-                book.AuthorId =authorId;
+                book.AuthorId =updateBookRequest.AuthorId;
                 book.Price = updateBookRequest.Price;
                 book.NumberOfPages = updateBookRequest.NumberOfPages;
                 dbContext.SaveChanges();

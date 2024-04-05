@@ -1,5 +1,5 @@
-import axios from "axios";
 import React, { useState } from "react";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 interface Book {
@@ -16,12 +16,11 @@ interface Author {
     name: string;
 }
 
-const SearchByISBN: React.FC = () => {
+const SearchByAuthor: React.FC = () => {
     const [books, setBooks] = useState<Book[]>([]);
     const [error, setError] = useState<string | null>(null);
     const [authors, setAuthors] = useState<Record<number, Author>>({});
     const navigate = useNavigate();
-
     const back = () => {
         navigate('/books/search-book');
     }
@@ -29,14 +28,13 @@ const SearchByISBN: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const data = new FormData(e.currentTarget);
-        const isbn = data.get("ISBN");
+        const authorId = Number(data.get("AuthorId")); // Convert to number
         try {
-            const response = await axios.get(`https://localhost:7132/booksByIsbn/${isbn}`);
+            const response = await axios.get(`https://localhost:7132/booksByAuthor/${authorId}`);
             if (response.status === 200) {
                 const booksData: Book[] = await response.data;
                 if (booksData.length === 0) {
-                    alert("No books found with the given ISBN");
-                    navigate('/books');
+                    alert("No books found with the given author");
                 } else {
                     setBooks(booksData);
                     await fetchAuthors(booksData); // Fetch authors after receiving book data
@@ -75,18 +73,19 @@ const SearchByISBN: React.FC = () => {
 
     return (
         <div>
-            <h1 className="createBookTitle">Search Book by ISBN</h1>
+            <h1 className="createBookTitle">Search Book by Author</h1>
             <form className="createBookForm" onSubmit={handleSubmit}>
-                <label htmlFor="isbn">ISBN</label>
-                <input type="number" id="isbn" name="ISBN" />
+                <label htmlFor="authorId">Insert author ID:</label>
+                <input type="number" id="authorId" name="AuthorId" />
                 <button className="createBookButton" type="submit">Search</button>
+                <button className="goBackToBooks" onClick={back}>Back</button>
             </form>
 
             {error && <p>{error}</p>}
 
-            <div>
+            <div className="books-container"> {/* Add a container for books */}
                 {books.map(book => (
-                    <div key={book.id}>
+                    <div key={book.id} className="book-item"> {/* Add a class for book item */}
                         <h2>{book.title}</h2>
                         <p>ISBN: {book.isbn}</p>
                         <p>Price: ${book.price}</p>
@@ -96,9 +95,10 @@ const SearchByISBN: React.FC = () => {
                 ))}
             </div>
 
-            <button className="goBackToBooks" onClick={back}>Back</button>
+
         </div>
     );
+
 }
 
-export default SearchByISBN;
+export default SearchByAuthor;

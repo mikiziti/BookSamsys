@@ -1,34 +1,115 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+
+
+interface Author {
+    id: string;
+    name: string;
+}
+
+
+
+
 
 const UpdateBook: React.FC = () => {
     const navigate = useNavigate();
     const back = () => {
         navigate('/books');
     }
-    return (
+    const [authors, setAuthors] = useState<Author[]>([]);
+    const [authorId, setAuthorId] = useState<string>("");
+    const [title, setTitle] = useState<string>("");
+    const [isbn, setIsbn] = useState<string>("");
+    const [price, setPrice] = useState<string>("");
+    const [numPages, setNumPages] = useState<string | undefined>();
 
+    const handleAuthorChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setAuthorId(e.target.value);
+    };
+
+    const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setTitle(e.target.value);
+    };
+
+    const handleIsbnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setIsbn(e.target.value);
+    };
+
+    const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setPrice((e.target.value));
+    };
+
+    const handleNumPagesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setNumPages((e.target.value));
+    };
+
+    useEffect(() => {
+        const fetchAuthors = async () => {
+            try {
+                const response = await fetch("https://localhost:7132/api/Author");
+                if (!response.ok) {
+                    throw new Error("Failed to fetch authors");
+                }
+                const data = await response.json();
+                setAuthors(data);
+            } catch (error) {
+                console.error("Error fetching authors:", error);
+            }
+        };
+        fetchAuthors();
+    }, []);
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        try {
+            const response = await axios.put(`https://localhost:7132/updateBook/${isbn}`, {
+                isbn: isbn,
+                authorId: authorId,
+                title: title,
+                price: price,
+                numberOfPages: numPages
+            });
+            if (response.status === 200) {
+                alert('Book updated successfully');
+                navigate('/books');
+            } else {
+                alert(`Failed to update book: ${response.data.message}`);
+            }
+        } catch (error: any) {
+            console.error('Error adding book:', error.message);
+        }
+    };
+
+
+
+    return (
         <div>
-            <h1 className="createBookTitle">Update Book</h1>
-            <form className="createBookForm">
+            <h1 className="createBookTitle">Create Book</h1>
+            <form className="createBookForm" onSubmit={handleSubmit}>
                 <label htmlFor="title">Title</label>
-                <input type="text" id="title" name="title" />
+                <input type="text" id="title" name="title" value={title} onChange={handleTitleChange} required />
 
                 <label htmlFor="author">Author</label>
-                <input type="string" id="author" name="author" />
+                <select id="author" name="author" value={authorId} onChange={handleAuthorChange} required>
+                    <option value="">Select an author</option>
+                    {authors.map((author) => (
+                        <option key={author.id} value={author.id}>{author.name}</option>
+                    ))}
+                </select>
 
                 <label htmlFor="isbn">ISBN</label>
-                <input type="number" id="isbn" name="isbn" />
+                <input type="number" id="isbn" name="isbn" value={isbn || ""} onChange={handleIsbnChange} required />
 
                 <label htmlFor="price">Price</label>
-                <input type="number" id="price" name="price" />
+                <input type="number" id="price" name="price" value={price || ""} onChange={handlePriceChange} required />
 
                 <label htmlFor="numPages">Number of Pages</label>
-                <input type="number" id="numPages" name="numPages" />
-            </form>
-            <button className="createBookButton" type="submit" onClick={back}>Update</button>
+                <input type="number" id="numPages" name="numPages" value={numPages || ""} onChange={handleNumPagesChange} required />
 
-            <button className="goBackToBooks" onClick={back}>Back</button>
+                <button className="createBookButton" type="submit">Create</button>
+                <button className="goBackToBooks" onClick={back}>Back</button>
+            </form>
         </div>
     );
 }
