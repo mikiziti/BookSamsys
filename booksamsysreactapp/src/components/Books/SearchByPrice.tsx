@@ -75,7 +75,7 @@ const SearchByPrice: React.FC = () => {
     return (
         <div>
             <h1 className="createBookTitle">Search Book by Price</h1>
-            <form className="searchBookByTitle" onSubmit={handleSubmit}>
+            <form className="searchBookByPrice" onSubmit={handleSubmit}>
                 <label htmlFor="price">Insert price:</label>
                 <input type="number" id="price" name="price"
                     onChange={(e) => setPriceValue(Number(e.target.value))} />
@@ -87,14 +87,16 @@ const SearchByPrice: React.FC = () => {
 
             {error && <p>{error}</p>}
 
-            <div>
+            <div className="resultsContainer"> {/* Add a container for books */}
                 {books.map(book => (
-                    <div key={book.id}>
+                    <div className="bookContainer" key={book.id}> {/* Add a class for book item */}
                         <h2>{book.title}</h2>
-                        <p>ISBN: {book.isbn}</p>
-                        <p>Price: ${book.price}</p>
-                        <p>Number of Pages: {book.numberOfPages}</p>
-                        <p>Author: {authors[book.authorId]?.name}</p>
+                        <div className="bookInfo">
+                            <p>ISBN: {book.isbn}</p>
+                            <p>Price: ${book.price}</p>
+                            <p>Number of Pages: {book.numberOfPages}</p>
+                            <p>Author: {authors[book.authorId]?.name}</p>
+                        </div>
                     </div>
                 ))}
             </div>

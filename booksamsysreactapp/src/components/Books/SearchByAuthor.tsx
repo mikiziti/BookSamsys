@@ -23,6 +23,7 @@ const SearchByAuthor: React.FC = () => {
     const [authors, setAuthors] = useState<Record<number, Author>>({});
     const [authorId, setAuthorId] = useState<number>(0);
     const navigate = useNavigate();
+
     const back = () => {
         navigate('/books/search-book');
     }
@@ -68,7 +69,7 @@ const SearchByAuthor: React.FC = () => {
     return (
         <div>
             <h1 className="createBookTitle">Search Book by Author</h1>
-            <form className="searchBookByTitle" onSubmit={handleSubmit}>
+            <form className="searchBookByAuthor" onSubmit={handleSubmit}>
                 <label htmlFor="authorId">Insert author ID:</label>
                 <input type="number" id="authorId" name="AuthorId"
                     onChange={(e) => setAuthorId(Number(e.target.value))} />
@@ -78,22 +79,21 @@ const SearchByAuthor: React.FC = () => {
 
             {error && <p>{error}</p>}
 
-            <div> {/* Add a container for books */}
+            <div className="resultsContainer"> {/* Add a container for books */}
                 {books.map(book => (
-                    <div key={book.id}> {/* Add a class for book item */}
+                    <div className="bookContainer" key={book.id}> {/* Add a class for book item */}
                         <h2>{book.title}</h2>
-                        <p>ISBN: {book.isbn}</p>
-                        <p>Price: ${book.price}</p>
-                        <p>Number of Pages: {book.numberOfPages}</p>
-                        <p>Author: {authors[book.authorId]?.name}</p>
+                        <div className="bookInfo">
+                            <p>ISBN: {book.isbn}</p>
+                            <p>Price: ${book.price}</p>
+                            <p>Number of Pages: {book.numberOfPages}</p>
+                            <p>Author: {authors[book.authorId]?.name}</p>
+                        </div>
                     </div>
                 ))}
             </div>
-
-
         </div>
     );
-
 }
 
 export default SearchByAuthor;

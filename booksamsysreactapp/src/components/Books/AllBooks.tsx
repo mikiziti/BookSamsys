@@ -21,28 +21,30 @@ interface Author {
 const AllBooks: React.FC = () => {
     const [books, setBooks] = React.useState<Book[]>([]);
     const [error, setError] = React.useState<string | null>(null);
+    const [loading, setLoading] = React.useState<boolean>(false);
     const [authors, setAuthors] = React.useState<Record<number, Author>>({});
     const navigate = useNavigate();
+
     const back = () => {
         navigate('/books/search-book');
     }
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const data = new FormData(e.currentTarget);
+        setLoading(true);
         try {
             const booksData = await BookService.getBooks();
             if (booksData.length === 0) {
-                alert("No books found");
+                setError("No books found");
             } else {
                 setBooks(booksData);
                 await fetchAuthors(booksData); // Fetch authors after receiving book data
                 setError(null);
             }
-
-
         } catch (error) {
             setError("Failed to fetch books");
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -57,8 +59,7 @@ const AllBooks: React.FC = () => {
                     authorsMap[author.id] = author;
                 });
                 setAuthors(authorsMap);
-            }
-            else {
+            } else {
                 throw new Error("Failed to fetch authors");
             }
         } catch (error) {
@@ -70,24 +71,28 @@ const AllBooks: React.FC = () => {
         <div>
             <h1 className="createBookTitle">Search all Books</h1>
             <form className="searchBookByTitle" onSubmit={handleSubmit}>
-                <button type="submit" className="createBookButton">Search</button>
+                <button type="submit" className="createBookButton" disabled={loading}>
+                    {loading ? "Loading..." : "Search"}
+                </button>
                 <button className="goBackToBooks" onClick={back}>Back</button>
             </form>
             {error && <p>{error}</p>}
-
-            <div>
+            {loading && <p>Loading...</p>}
+            <div className="resultsContainer">
                 {books.map(book => (
-                    <div key={book.id}>
+                    <div className="bookContainer" key={book.id}>
                         <h2>{book.title}</h2>
-                        <p>ISBN: {book.isbn}</p>
-                        <p>Price: ${book.price}</p>
-                        <p>Number of Pages: {book.numberOfPages}</p>
-                        <p>Author: {authors[book.authorId]?.name}</p>
+                        <div className="bookInfo">
+                            <p>ISBN: {book.isbn}</p>
+                            <p>Price: ${book.price}</p>
+                            <p>Number of Pages: {book.numberOfPages}</p>
+                            <p>Author: {authors[book.authorId]?.name}</p>
+                        </div>
                     </div>
                 ))}
             </div>
-
         </div>
     );
 }
+
 export default AllBooks;

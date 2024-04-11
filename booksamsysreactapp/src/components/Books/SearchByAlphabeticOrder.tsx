@@ -3,7 +3,6 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import BookService from "./Service/BookService";
 
-
 interface Book {
     id: number;
     title: string;
@@ -12,6 +11,7 @@ interface Book {
     numberOfPages: number;
     authorId: number;
 }
+
 interface Author {
     id: number;
     name: string;
@@ -22,13 +22,13 @@ const SearchByAlphabeticOrder: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [authors, setAuthors] = useState<Record<number, Author>>({});
     const navigate = useNavigate();
+
     const back = () => {
         navigate('/books/search-book');
     }
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const data = new FormData(e.currentTarget);
         try {
             const booksData: Book[] = await BookService.getBooksInAlphabeticalOrder();
             if (booksData.length === 0) {
@@ -38,7 +38,6 @@ const SearchByAlphabeticOrder: React.FC = () => {
                 await fetchAuthors(booksData); // Fetch authors after receiving book data
                 setError(null);
             }
-
         } catch (error) {
             setError("Failed to fetch books");
         }
@@ -72,19 +71,21 @@ const SearchByAlphabeticOrder: React.FC = () => {
             </form>
             {error && <p>{error}</p>}
 
-            <div>
+            <div className="resultsContainer"> {/* Add a container for books */}
                 {books.map(book => (
-                    <div key={book.id}>
+                    <div className="bookContainer" key={book.id}> {/* Add a class for book item */}
                         <h2>{book.title}</h2>
-                        <p>ISBN: {book.isbn}</p>
-                        <p>Price: ${book.price}</p>
-                        <p>Number of Pages: {book.numberOfPages}</p>
-                        <p>Author: {authors[book.authorId]?.name}</p>
+                        <div className="bookInfo">
+                            <p>ISBN: {book.isbn}</p>
+                            <p>Price: ${book.price}</p>
+                            <p>Number of Pages: {book.numberOfPages}</p>
+                            <p>Author: {authors[book.authorId]?.name}</p>
+                        </div>
                     </div>
                 ))}
             </div>
-
         </div>
     );
 }
+
 export default SearchByAlphabeticOrder;

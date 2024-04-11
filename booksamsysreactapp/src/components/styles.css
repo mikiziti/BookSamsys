@@ -166,9 +166,8 @@ ul {
     background-color: blanchedalmond;
     font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
     margin-bottom: 20px;
+    position: relative;
 }
-
-
 
 .createBookButton,
 .goBackToBooks {
@@ -241,4 +240,46 @@ ul {
 
 .author-item h2 {
     margin-top: 0;
+}
+
+
+.createBookTitle {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.searchBookByTitle {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.createBookButton,
+.goBackToBooks {
+    margin: 0 10px;
+}
+
+.resultsContainer {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.bookContainer {
+    width: 45%;
+    /* Adjust width as needed */
+    margin: 0 auto 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+}
+
+.bookContainer h2 {
+    margin-top: 0;
+}
+
+.bookInfo {
+    margin-top: 10px;
+}
+
+.bookInfo p {
+    margin: 5px 0;
 }
