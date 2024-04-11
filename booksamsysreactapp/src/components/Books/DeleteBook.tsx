@@ -17,10 +17,10 @@ const DeleteBook: React.FC = () => {
                 alert("Book deleted successfully");
                 navigate("/books");
             } else {
-                throw new Error("Failed to delete book");
+                throw new Error("Book not found");
             }
-        } catch (error) {
-            alert("Failed to delete book");
+        } catch (error: any) {
+            alert("Error deleting book: Book not found");
         }
     }
     return (

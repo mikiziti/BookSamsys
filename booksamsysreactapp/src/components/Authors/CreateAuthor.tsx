@@ -1,9 +1,10 @@
-import axios from "axios";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const CreateAuthor: React.FC = () => {
     const [authorName, setAuthorName] = useState("");
+    const navigate = useNavigate();
 
     const handleAuthorNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setAuthorName(event.target.value);
@@ -23,6 +24,7 @@ const CreateAuthor: React.FC = () => {
             if (response.ok) {
                 // Handle success, maybe redirect to the authors list page
                 alert("Author created successfully");
+                navigate("/authors")
             } else {
                 alert("Failed to create author");
             }

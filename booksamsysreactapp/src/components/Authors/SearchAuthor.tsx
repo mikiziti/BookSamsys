@@ -4,12 +4,12 @@ import { Link } from "react-router-dom";
 interface Author {
     id: number;
     name: string;
-
 }
 
 const SearchAuthor: React.FC = () => {
     const [authors, setAuthors] = useState<Author[]>([]);
     const [isFetching, setIsFetching] = useState<boolean>(false);
+    const [searched, setSearched] = useState<boolean>(false);
 
     const fetchAuthors = async () => {
         setIsFetching(true);
@@ -20,8 +20,9 @@ const SearchAuthor: React.FC = () => {
             }
             const data = await response.json();
             setAuthors(data);
+            setSearched(true);
         } catch (error) {
-            console.error("Error fetching authors:", error);
+            console.error('Error fetching authors:', error);
         } finally {
             setIsFetching(false);
         }
@@ -34,6 +35,7 @@ const SearchAuthor: React.FC = () => {
             <button className="createBookButton" onClick={fetchAuthors} disabled={isFetching}>
                 {isFetching ? "Searching..." : "Search"}
             </button>
+            {searched && authors.length === 0 && <p>No authors found</p>}
             <div>
                 {authors.map(author => (
                     <div key={author.id}>

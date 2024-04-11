@@ -62,6 +62,18 @@ const UpdateBook: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        const priceValue = parseFloat(price);
+        const numPagesValue = parseInt(numPages || "0", 10);
+
+        if (isNaN(priceValue) || priceValue < 0) {
+            alert("Price must be a non-negative number");
+            return;
+        }
+
+        if (isNaN(numPagesValue) || numPagesValue < 0) {
+            alert("Number of pages must be a non-negative integer");
+            return;
+        }
         try {
             const response = await axios.put(`https://localhost:7132/updateBook/${isbn}`, {
                 isbn: isbn,
@@ -74,10 +86,19 @@ const UpdateBook: React.FC = () => {
                 alert('Book updated successfully');
                 navigate('/books');
             } else {
-                alert(`Failed to update book: ${response.data.message}`);
+                throw new Error(`Failed to update book: ${response.data.message}`);
             }
         } catch (error: any) {
-            console.error('Error adding book:', error.message);
+            console.error('Error updating book:', error);
+            if (error.response && error.response.status === 404) {
+                alert('Failed to update book: Book not found in the database');
+            } else if (error.response && error.response.status === 400 && error.response.data.Isbn) {
+                const errorMessage = error.response.data.Isbn[0];
+                alert(`Failed to update book: ${errorMessage}`);
+            } else {
+                alert('Failed to update book. Please try again.');
+                console.error('Error updating book:', error.message);
+            }
         }
     };
 
@@ -85,7 +106,7 @@ const UpdateBook: React.FC = () => {
 
     return (
         <div>
-            <h1 className="createBookTitle">Create Book</h1>
+            <h1 className="createBookTitle">Update Book</h1>
             <form className="createBookForm" onSubmit={handleSubmit}>
                 <label htmlFor="title">Title</label>
                 <input type="text" id="title" name="title" value={title} onChange={handleTitleChange} required />

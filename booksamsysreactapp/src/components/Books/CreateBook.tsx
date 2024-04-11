@@ -59,6 +59,18 @@ const CreateBook: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        const priceValue = parseFloat(price);
+        const numPagesValue = parseInt(numPages || "0", 10);
+
+        if (isNaN(priceValue) || priceValue < 0) {
+            alert("Price must be a non-negative number");
+            return;
+        }
+
+        if (isNaN(numPagesValue) || numPagesValue < 0) {
+            alert("Number of pages must be a non-negative integer");
+            return;
+        }
         try {
             const response = await axios.post(`https://localhost:7132/addBook`, {
                 isbn: isbn,
@@ -71,10 +83,17 @@ const CreateBook: React.FC = () => {
                 alert('Book added successfully');
                 navigate('/books');
             } else {
-                alert(`Failed to add book: ${response.data.message}`);
+                throw new Error(`Failed to add book: ${response.data.message}`);
             }
         } catch (error: any) {
-            console.error('Error adding book:', error.message);
+            console.error('Error adding book:', error);
+            if (error.response && error.response.status === 400 && error.response.data.Isbn) {
+                const errorMessage = error.response.data.Isbn[0]; // Assuming only one error message is returned
+                alert(`Failed to add book: ${errorMessage}`);
+            } else {
+                alert('Failed to add book. Please try again.');
+                console.error('Error adding book:', error.message);
+            }
         }
     };
 

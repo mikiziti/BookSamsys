@@ -197,14 +197,16 @@ ul {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    margin-bottom: 10px;
-    /* Adjust the margin bottom */
+    margin-bottom: 20px;
+    /* Adjust margin bottom */
 }
 
 .book-item {
     width: 300px;
-    margin: 10px;
-    padding: 10px;
+    margin: 20px;
+    /* Adjust margin */
+    padding: 20px;
+    /* Adjust padding */
     background-color: #f9f9f9;
     border-radius: 5px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -212,7 +214,12 @@ ul {
 
 .book-item h2 {
     margin-top: 0;
+    font-size: 24px;
+    /* Adjust font size */
 }
+
+/* Add other styles for book item details as needed */
+
 
 /* Specific styles for authors */
 .authors-container {
