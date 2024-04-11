@@ -1,8 +1,7 @@
 import React, { useState } from "react";
-
 import axios from "axios";
-
 import { useNavigate } from "react-router-dom";
+import BookService from "./Service/BookService";
 
 interface Book {
     id: number;
@@ -22,33 +21,35 @@ const SearchByPrice: React.FC = () => {
     const [books, setBooks] = useState<Book[]>([]);
     const [error, setError] = useState<string | null>(null);
     const [authors, setAuthors] = useState<Record<number, Author>>({});
+    const [priceValue, setPriceValue] = useState<number>();
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const navigate = useNavigate();
+
     const back = () => {
         navigate('/books/search-book');
     }
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const data = new FormData(e.currentTarget);
-        const price = Number(data.get("price")); // Convert to number
-        try {
-            const response = await axios.get(`https://localhost:7132/booksByPrice/${price}`);
-            if (response.status === 200) {
-                const booksData: Book[] = await response.data;
-                if (booksData.length === 0) {
-                    alert("No books found with the given price");
-                } else {
-                    setBooks(booksData);
-                    await fetchAuthors(booksData); // Fetch authors after receiving book data
-                    setError(null);
-                }
+        if (!priceValue || priceValue <= 0) {
+            alert("Please enter a valid price.");
+            return;
+        }
 
-            }
-            else {
-                throw new Error("Failed to fetch books");
+        setIsLoading(true);
+        try {
+            const booksData = await BookService.getBooksByPrice(priceValue);
+            if (booksData.length === 0) {
+                alert("No books found with the given price");
+            } else {
+                setBooks(booksData);
+                await fetchAuthors(booksData); // Fetch authors after receiving book data
+                setError(null);
             }
         } catch (error) {
             setError("Failed to fetch books");
+        } finally {
+            setIsLoading(false);
         }
     }
 
@@ -63,8 +64,7 @@ const SearchByPrice: React.FC = () => {
                     authorsMap[author.id] = author;
                 });
                 setAuthors(authorsMap);
-            }
-            else {
+            } else {
                 throw new Error("Failed to fetch authors");
             }
         } catch (error) {
@@ -75,18 +75,21 @@ const SearchByPrice: React.FC = () => {
     return (
         <div>
             <h1 className="createBookTitle">Search Book by Price</h1>
-            <form className="createBookForm" onSubmit={handleSubmit}>
-                <label htmlFor="authorId">Insert price:</label>
-                <input type="number" id="price" name="price" />
-                <button className="createBookButton" type="submit">Search</button>
+            <form className="searchBookByTitle" onSubmit={handleSubmit}>
+                <label htmlFor="price">Insert price:</label>
+                <input type="number" id="price" name="price"
+                    onChange={(e) => setPriceValue(Number(e.target.value))} />
+                <button className="createBookButton" type="submit" disabled={isLoading}>
+                    {isLoading ? 'Searching...' : 'Search'}
+                </button>
                 <button className="goBackToBooks" onClick={back}>Back</button>
             </form>
 
             {error && <p>{error}</p>}
 
-            <div className="books-container"> {/* Add a container for books */}
+            <div>
                 {books.map(book => (
-                    <div key={book.id} className="book-item"> {/* Add a class for book item */}
+                    <div key={book.id}>
                         <h2>{book.title}</h2>
                         <p>ISBN: {book.isbn}</p>
                         <p>Price: ${book.price}</p>
@@ -95,9 +98,8 @@ const SearchByPrice: React.FC = () => {
                     </div>
                 ))}
             </div>
-
-
         </div>
     );
 }
+
 export default SearchByPrice;

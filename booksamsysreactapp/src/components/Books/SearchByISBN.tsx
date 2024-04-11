@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import BookService from "./Service/BookService";
 
 interface Book {
     id: number;
@@ -20,6 +21,8 @@ const SearchByISBN: React.FC = () => {
     const [books, setBooks] = useState<Book[]>([]);
     const [error, setError] = useState<string | null>(null);
     const [authors, setAuthors] = useState<Record<number, Author>>({});
+    const [isbnNumber, setIsbnNumber] = useState<number>();
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const navigate = useNavigate();
 
     const back = () => {
@@ -28,27 +31,26 @@ const SearchByISBN: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const data = new FormData(e.currentTarget);
-        const isbn = data.get("ISBN");
-        try {
-            const response = await axios.get(`https://localhost:7132/booksByIsbn/${isbn}`);
-            if (response.status === 200) {
-                const booksData: Book[] = await response.data;
-                if (booksData.length === 0) {
-                    alert("No books found with the given ISBN");
-                    navigate('/books');
-                } else {
-                    setBooks(booksData);
-                    await fetchAuthors(booksData); // Fetch authors after receiving book data
-                    setError(null);
-                }
+        if (!isbnNumber) {
+            alert("Please enter an ISBN.");
+            return;
+        }
 
-            }
-            else {
-                throw new Error("Failed to fetch books");
+        setIsLoading(true);
+        try {
+            const booksData = await BookService.getBookByISBN(isbnNumber);
+            if (booksData.length === 0) {
+                alert("No books found with the given ISBN");
+                navigate('/books');
+            } else {
+                setBooks(booksData);
+                await fetchAuthors(booksData); // Fetch authors after receiving book data
+                setError(null);
             }
         } catch (error) {
             setError("Failed to fetch books");
+        } finally {
+            setIsLoading(false);
         }
     }
 
@@ -76,10 +78,14 @@ const SearchByISBN: React.FC = () => {
     return (
         <div>
             <h1 className="createBookTitle">Search Book by ISBN</h1>
-            <form className="createBookForm" onSubmit={handleSubmit}>
+            <form className="searchBookByTitle" onSubmit={handleSubmit}>
                 <label htmlFor="isbn">ISBN</label>
-                <input type="number" id="isbn" name="ISBN" />
-                <button className="createBookButton" type="submit">Search</button>
+                <input type="text" id="isbn" name="isbn"
+                    value={isbnNumber} onChange={(e) => setIsbnNumber(Number(e.target.value))} />
+                <button className="createBookButton" type="submit" disabled={isLoading}>
+                    {isLoading ? 'Searching...' : 'Search'}
+                </button>
+                <button className="goBackToBooks" onClick={back}>Back</button>
             </form>
 
             {error && <p>{error}</p>}
@@ -95,8 +101,6 @@ const SearchByISBN: React.FC = () => {
                     </div>
                 ))}
             </div>
-
-            <button className="goBackToBooks" onClick={back}>Back</button>
         </div>
     );
 }

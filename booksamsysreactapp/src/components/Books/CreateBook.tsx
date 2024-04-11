@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import BookService from "./Service/BookService";
 
 interface Author {
     id: string;
@@ -72,23 +73,19 @@ const CreateBook: React.FC = () => {
             return;
         }
         try {
-            const response = await axios.post(`https://localhost:7132/addBook`, {
+            const response = await BookService.createBook({
                 isbn: isbn,
                 authorId: authorId,
                 title: title,
                 price: price,
                 numberOfPages: numPages
             });
-            if (response.status === 200) {
-                alert('Book added successfully');
-                navigate('/books');
-            } else {
-                throw new Error(`Failed to add book: ${response.data.message}`);
-            }
+            alert('Book added successfully');
+            navigate('/books');
         } catch (error: any) {
             console.error('Error adding book:', error);
             if (error.response && error.response.status === 400 && error.response.data.Isbn) {
-                const errorMessage = error.response.data.Isbn[0]; // Assuming only one error message is returned
+                const errorMessage = error.response.data.Isbn[0];
                 alert(`Failed to add book: ${errorMessage}`);
             } else {
                 alert('Failed to add book. Please try again.');

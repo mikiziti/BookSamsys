@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import BookService from "./Service/BookService";
 
 
 interface Book {
@@ -22,6 +23,7 @@ const SearchByTitle: React.FC = () => {
     const [books, setBooks] = useState<Book[]>([]);
     const [error, setError] = useState<string | null>(null);
     const [authors, setAuthors] = useState<Record<number, Author>>({});
+    const [title, setTitle] = useState<string>("");
     const navigate = useNavigate();
     const back = () => {
         navigate('/books/search-book');
@@ -29,29 +31,30 @@ const SearchByTitle: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const data = new FormData(e.currentTarget);
-        const title = data.get("title");
+        if (!title) {
+            alert("Please enter a title.");
+            return;
+        }
         try {
-            const response = await axios.get(`https://localhost:7132/booksByTitle/${title}`);
-            if (response.status === 200) {
-                const booksData: Book[] = await response.data;
-                if (booksData.length === 0) {
-                    alert("No books found with the given title");
-                    navigate('/books');
-                }
-                else {
-                    setBooks(booksData);
-                    await fetchAuthors(booksData); // Fetch authors after receiving book data
-                    setError(null);
-                    console.log(booksData);
-                }
-            } else {
-                throw new Error("Failed to fetch books");
+            const booksData = await BookService.getBooksByTitle(title);
 
+
+            if (booksData.length === 0) {
+                alert("No books found with the given title");
+                navigate('/books');
+            }
+            else {
+                setBooks(booksData);
+                await fetchAuthors(booksData); // Fetch authors after receiving book data
+                setError(null);
+                console.log(booksData);
             }
 
-        } catch (error) {
-            setError("Failed to fetch books");
+
+        } catch (error: any) {
+            if (error.response && error.response.status === 404) {
+                alert("Book not found. Please enter a valid title.");
+            }
         }
     }
     const fetchAuthors = async (booksData: Book[]) => {
@@ -81,7 +84,8 @@ const SearchByTitle: React.FC = () => {
             <h1 className="createBookTitle">Search Book by Title</h1>
             <form className="searchBookByTitle" onSubmit={handleSubmit}>
                 <label htmlFor="title">Search by title:</label>
-                <input type="text" id="title" name="title" />
+                <input type="text" id="title" name="title"
+                    onChange={(e) => setTitle(e.target.value)} />
                 <button type="submit" className="createBookButton">Search</button>
             </form>
             {error && <p>{error}</p>}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import BookService from "./Service/BookService";
 
 
 interface Author {
@@ -75,19 +76,15 @@ const UpdateBook: React.FC = () => {
             return;
         }
         try {
-            const response = await axios.put(`https://localhost:7132/updateBook/${isbn}`, {
+            const response = await BookService.updateBook({
                 isbn: isbn,
                 authorId: authorId,
                 title: title,
                 price: price,
                 numberOfPages: numPages
             });
-            if (response.status === 200) {
-                alert('Book updated successfully');
-                navigate('/books');
-            } else {
-                throw new Error(`Failed to update book: ${response.data.message}`);
-            }
+            alert('Book updated successfully');
+            navigate('/books');
         } catch (error: any) {
             console.error('Error updating book:', error);
             if (error.response && error.response.status === 404) {
@@ -128,7 +125,7 @@ const UpdateBook: React.FC = () => {
                 <label htmlFor="numPages">Number of Pages</label>
                 <input type="number" id="numPages" name="numPages" value={numPages || ""} onChange={handleNumPagesChange} required />
 
-                <button className="createBookButton" type="submit">Create</button>
+                <button className="createBookButton" type="submit">Update</button>
                 <button className="goBackToBooks" onClick={back}>Back</button>
             </form>
         </div>

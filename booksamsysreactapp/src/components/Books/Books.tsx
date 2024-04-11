@@ -1,5 +1,4 @@
 import React from "react";
-import bookImg from "../../data/book.gif";
 import { Link } from "react-router-dom";
 
 
@@ -19,7 +18,7 @@ const Book: React.FC = () => {
             <Link to="/books/search-book" className="book-button">Search Book</Link>
             <Link to="/" className="book-button">Back</Link>
 
-            <img className="bookMenuImg" src={bookImg} alt="book" />
+            <img className="bookMenuImg" src="/Book/book.gif" alt="book" />
         </div>
     );
 }

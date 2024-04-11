@@ -1,5 +1,4 @@
 import React from "react";
-import bookImg from "../../data/book.gif";
 import { Link } from "react-router-dom";
 
 const Author: React.FC = () => {
@@ -9,7 +8,7 @@ const Author: React.FC = () => {
             <Link to="/authors/create-author" className="author-button">Create Author</Link>
             <Link to="/authors/search-author" className="author-button">Search Author</Link>
             <Link to="/" className="book-button">Back</Link>
-            <img className="bookMenuImg" src={bookImg} alt="book" />
+            <img className="bookMenuImg" src="/Book/book.gif" alt="book" />
         </div>
     );
 }

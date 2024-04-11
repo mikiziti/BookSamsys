@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import BookService from "./Service/BookService";
 
 
 interface Book {
@@ -29,21 +30,15 @@ const SearchByAlphabeticOrder: React.FC = () => {
         e.preventDefault();
         const data = new FormData(e.currentTarget);
         try {
-            const response = await axios.get(`https://localhost:7132/alphabeticOrder`);
-            if (response.status === 200) {
-                const booksData: Book[] = await response.data;
-                if (booksData.length === 0) {
-                    alert("No books found");
-                } else {
-                    setBooks(booksData);
-                    await fetchAuthors(booksData); // Fetch authors after receiving book data
-                    setError(null);
-                }
+            const booksData: Book[] = await BookService.getBooksInAlphabeticalOrder();
+            if (booksData.length === 0) {
+                alert("No books found");
+            } else {
+                setBooks(booksData);
+                await fetchAuthors(booksData); // Fetch authors after receiving book data
+                setError(null);
+            }
 
-            }
-            else {
-                throw new Error("Failed to fetch books");
-            }
         } catch (error) {
             setError("Failed to fetch books");
         }

@@ -1,38 +1,51 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import BookService from "./Service/BookService";
 
 const DeleteBook: React.FC = () => {
     const navigate = useNavigate();
+    const [isbn, setIsbn] = useState<string>("");
+
     const back = () => {
         navigate('/books');
     }
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const data = new FormData(e.currentTarget);
-        const isbn = data.get("ISBN");
+        if (!isbn) {
+            alert("Please enter an ISBN.");
+            return;
+        }
         try {
-            const response = await axios.delete(`https://localhost:7132/deleteBook/${isbn}`);
-            if (response.status === 200) {
-                alert("Book deleted successfully");
-                navigate("/books");
-            } else {
-                throw new Error("Book not found");
-            }
+            await BookService.deleteBook(isbn);
+            alert("Book deleted successfully");
+            navigate("/books");
         } catch (error: any) {
-            alert("Error deleting book: Book not found");
+            if (error.response && error.response.status === 404) {
+                alert("Book not found. Please enter a valid ISBN.");
+            } else {
+                alert("Error deleting book. Please try again later.");
+            }
         }
     }
+
     return (
         <div>
             <h1 className="createBookTitle">Delete Book</h1>
             <form className="createBookForm" onSubmit={handleSubmit}>
-                <label htmlFor="title">ISBN</label>
-                <input type="number" id="isbn" name="ISBN" />
+                <label htmlFor="isbn">ISBN</label>
+                <input
+                    type="text"
+                    id="isbn"
+                    name="ISBN"
+                    value={isbn}
+                    onChange={(e) => setIsbn(e.target.value)}
+                />
                 <button className="createBookButton" type="submit">Delete</button>
             </form>
             <button className="goBackToBooks" onClick={back}>Back</button>
         </div>
     );
 }
+
 export default DeleteBook;
