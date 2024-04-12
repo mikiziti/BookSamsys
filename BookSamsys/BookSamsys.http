@@ -1,6 +1,0 @@
-@BookSamsys_HostAddress = http://localhost:5177
-
-GET {{BookSamsys_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

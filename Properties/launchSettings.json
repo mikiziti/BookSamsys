@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "BookSamsys": {
+      "commandName": "Project",
+      "launchBrowser": true
+    }
+  }
+}
